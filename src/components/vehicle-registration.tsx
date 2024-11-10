@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 const API_KEY = "851ee2036557883b14a629aa78894331bd1db831"
 const API_URL = "https://api.platerecognizer.com/v1/plate-reader/"
 
-export default function Home() {
+export function VehicleRegistration() {
   const [dragActive, setDragActive] = useState(false)
   const [recognizedPlate, setRecognizedPlate] = useState<string | null>(null)
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
@@ -47,9 +47,7 @@ export default function Home() {
 
       const data = await response.json()
       if (data.results && data.results.length > 0) {
-        const plate = data.results[0].plate.toUpperCase()
-        setRecognizedPlate(plate)
-        await sendToMongoDB(plate)
+        setRecognizedPlate(data.results[0].plate)
       } else {
         setError('No license plate detected')
       }
@@ -58,32 +56,6 @@ export default function Home() {
       console.error(err)
     } finally {
       setIsLoading(false)
-    }
-  }
-
-  const sendToMongoDB = async (plate: string) => {
-    try {
-      const response = await fetch('/api/parkingData', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          no: Date.now(),
-          type: 'Car',
-          noPlate: plate,
-          timeIn: new Date().toISOString(),
-          timeOut: '-',
-          duration: '-',
-          blockId: '0x' + Math.random().toString(16).slice(2, 10),
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to save parking data')
-      }
-    } catch (err) {
-      console.error('Error saving to MongoDB:', err)
     }
   }
 
@@ -117,10 +89,7 @@ export default function Home() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
-      <h1 className="mb-8 text-3xl font-bold text-center">
-        Automatic License No. Plate Recognition using AI and BlockChain
-      </h1>
+    <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardContent className="pt-6">
           <div
