@@ -62,6 +62,8 @@ export default function Home() {
   }
 
   const sendToMongoDB = async (plate: string) => {
+    console.log(new Date().toLocaleTimeString);
+    
     try {
       const response = await fetch('/api/parkingData', {
         method: 'POST',
@@ -72,7 +74,7 @@ export default function Home() {
           no: Date.now(),
           type: 'Car',
           noPlate: plate,
-          timeIn: new Date().toISOString(),
+          timeIn: new Date().toLocaleTimeString(),
           timeOut: '-',
           duration: '-',
           blockId: '0x' + Math.random().toString(16).slice(2, 10),
